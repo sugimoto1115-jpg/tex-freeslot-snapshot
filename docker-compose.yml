@@ -1,0 +1,15 @@
+services:
+  texcode:
+    build: .
+    image: texcode-texlive:1
+    container_name: texcode
+    user: "1000:1000"
+    environment:
+      PASSWORD: "tomosugi818"
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./workspace:/home/coder/project
+      - ./config:/home/coder/.config
+    working_dir: /home/coder/project
+    restart: unless-stopped

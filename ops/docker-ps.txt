@@ -1,0 +1,4 @@
+Created: 2026-04-19T15:17:44+00:00
+
+NAMES     IMAGE               STATUS          PORTS
+texcode   texcode-texlive:1   Up 47 minutes   127.0.0.1:8080->8080/tcp

@@ -1,0 +1,8 @@
+node_modules/
+.next/
+*.log
+*.vsix
+.env
+.env.*
+workspace/
+config.yaml
