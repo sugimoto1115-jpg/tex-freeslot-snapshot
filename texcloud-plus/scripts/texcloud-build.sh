@@ -9,14 +9,14 @@ fi
 INPUT="$1"
 
 abs_path() {
-  python3 - "$1" <<'PY2'
+  python3 - "$1" <<'PY'
 import os, sys
 print(os.path.abspath(sys.argv[1]))
-PY2
+PY
 }
 
 resolve_path() {
-  python3 - "$1" "$2" <<'PY2'
+  python3 - "$1" "$2" <<'PY'
 import os, sys
 base = os.path.dirname(os.path.abspath(sys.argv[1]))
 target = sys.argv[2]
@@ -24,11 +24,11 @@ if os.path.isabs(target):
     print(os.path.abspath(target))
 else:
     print(os.path.abspath(os.path.join(base, target)))
-PY2
+PY
 }
 
 get_magic() {
-  python3 - "$1" "$2" <<'PY2'
+  python3 - "$1" "$2" <<'PY'
 import re, sys
 file = sys.argv[1]
 key = sys.argv[2]
@@ -43,17 +43,19 @@ try:
 except FileNotFoundError:
     pass
 raise SystemExit(1)
-PY2
+PY
 }
 
 get_documentclass() {
-  python3 - "$1" <<'PY2'
+  python3 - "$1" <<'PY'
 import re, sys
 file = sys.argv[1]
 pat = re.compile(r'\\documentclass(?:\[[^\]]*\])?\{([^}]+)\}')
 try:
     with open(file, encoding='utf-8', errors='ignore') as f:
         for line in f:
+            line = line.lstrip('\ufeff')
+            line = line.split('%', 1)[0]
             m = pat.search(line)
             if m:
                 print(m.group(1).strip())
@@ -61,19 +63,7 @@ try:
 except FileNotFoundError:
     pass
 raise SystemExit(1)
-PY2
-}
-
-contains_japanese() {
-  python3 - "$1" <<'PY2'
-import re, sys
-pat = re.compile(r'[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]')
-try:
-    text = open(sys.argv[1], encoding='utf-8', errors='ignore').read()
-    raise SystemExit(0 if pat.search(text) else 1)
-except FileNotFoundError:
-    raise SystemExit(1)
-PY2
+PY
 }
 
 INPUT="$(abs_path "$INPUT")"
@@ -103,25 +93,14 @@ PROGRAM="$(printf '%s' "${PROGRAM:-}" | tr '[:upper:]' '[:lower:]')"
 CLASS="$(get_documentclass "$ROOT" || true)"
 CLASS="$(printf '%s' "${CLASS:-}" | tr '[:upper:]' '[:lower:]')"
 
-JAPANESE="no"
-if contains_japanese "$ROOT"; then
-  JAPANESE="yes"
-fi
-
 ENGINE=""
 if [ -n "$PROGRAM" ]; then
   case "$PROGRAM" in
     lualatex|luatex)
       ENGINE="lualatex"
       ;;
-    uplatex)
+    uplatex|platex|ptex2pdf)
       ENGINE="uplatex"
-      ;;
-    platex|ptex2pdf)
-      ENGINE="uplatex"
-      ;;
-    pdflatex)
-      ENGINE="pdflatex"
       ;;
   esac
 fi
@@ -135,18 +114,10 @@ if [ -z "$ENGINE" ]; then
       ENGINE="uplatex"
       ;;
     article|book|report)
-      if [ "$JAPANESE" = "yes" ]; then
-        ENGINE="uplatex"
-      else
-        ENGINE="lualatex"
-      fi
+      ENGINE="uplatex"
       ;;
     *)
-      if [ "$JAPANESE" = "yes" ]; then
-        ENGINE="uplatex"
-      else
-        ENGINE="lualatex"
-      fi
+      ENGINE="lualatex"
       ;;
   esac
 fi
@@ -158,7 +129,6 @@ BASE="${ROOT_FILE%.tex}"
 echo "INPUT  = $INPUT"
 echo "ROOT   = $ROOT"
 echo "CLASS  = ${CLASS:-unknown}"
-echo "JP     = $JAPANESE"
 echo "ENGINE = $ENGINE"
 
 cd "$ROOT_DIR"
@@ -167,23 +137,10 @@ case "$ENGINE" in
   lualatex)
     exec latexmk -lualatex "$ROOT_FILE"
     ;;
-  pdflatex)
-    exec latexmk -pdf "$ROOT_FILE"
-    ;;
   uplatex)
     uplatex -interaction=nonstopmode -file-line-error "$ROOT_FILE"
     uplatex -interaction=nonstopmode -file-line-error "$ROOT_FILE"
-    if [ -f "${BASE}.dvi" ]; then
-      dvipdfmx "${BASE}.dvi"
-    fi
-    exit 0
-    ;;
-  platex)
-    platex -kanji=utf8 -interaction=nonstopmode -file-line-error "$ROOT_FILE" || true
-    platex -kanji=utf8 -interaction=nonstopmode -file-line-error "$ROOT_FILE" || true
-    if [ -f "${BASE}.dvi" ]; then
-      dvipdfmx "${BASE}.dvi"
-    fi
+    dvipdfmx "${BASE}.dvi"
     exit 0
     ;;
   *)
