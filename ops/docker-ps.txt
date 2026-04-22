@@ -1,5 +1,5 @@
-Created: 2026-04-20T16:02:43+00:00
+Created: 2026-04-22T08:49:57+00:00
 
-NAMES           IMAGE                     STATUS        PORTS
-labtex-editor   labtex-editor-texlive:1   Up 25 hours   127.0.0.1:8180->8080/tcp
-texcode         texcode-texlive:1         Up 22 hours   127.0.0.1:8080->8080/tcp
+NAMES           IMAGE                     STATUS         PORTS
+labtex-editor   labtex-editor-texlive:1   Up 2 days      127.0.0.1:8180->8080/tcp
+texcode         texcode-texlive:1         Up 5 minutes   127.0.0.1:8080->8080/tcp

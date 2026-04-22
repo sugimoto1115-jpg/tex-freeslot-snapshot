@@ -135,15 +135,6 @@ async function getRootTexUri(doc: vscode.TextDocument): Promise<vscode.Uri> {
   return vscode.Uri.file(resolved);
 }
 
-async function restoreTocAfterPdfOpen(): Promise<void> {
-  try {
-    await vscode.commands.executeCommand('workbench.view.extension.texcloud');
-  } catch {}
-  try {
-    await vscode.commands.executeCommand('texcloud.refreshOutline');
-  } catch {}
-}
-
 async function openPdf(): Promise<void> {
   const doc = getActiveTexDocument();
   if (!doc) {
@@ -626,29 +617,11 @@ async function setPdfPreviewMode(): Promise<void> {
 }
 
 async function openPdfInternal(pdfUri: vscode.Uri): Promise<void> {
-  const texEditor = vscode.window.activeTextEditor;
-
   await closeExistingPdfTabs(pdfUri);
-
-  await vscode.commands.executeCommand('vscode.openWith', pdfUri, '', {
-    viewColumn: vscode.ViewColumn.Beside,
-    preview: false,
-    preserveFocus: true
-  } as any);
-
-  if (texEditor) {
-    await vscode.window.showTextDocument(
-      texEditor.document,
-      texEditor.viewColumn ?? vscode.ViewColumn.One,
-      false
-    );
-  }
-
-  await restoreTocAfterPdfOpen();
+  await vscode.commands.executeCommand('vscode.open', pdfUri);
 }
 
 async function openPdfExternal(externalUrl: string): Promise<void> {
   await vscode.env.openExternal(vscode.Uri.parse(externalUrl));
-  await restoreTocAfterPdfOpen();
 }
 // ==== texcloud pdf mode end ====
