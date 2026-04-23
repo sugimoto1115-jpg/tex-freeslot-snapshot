@@ -95,7 +95,7 @@ async function closeExistingPdfTabs(pdfUri: vscode.Uri): Promise<void> {
   }
 }
 
-function detectEngineFromText(text: string): 'lualatex' | 'platex' | 'uplatex' {
+function detectEngineFromText(text: string): 'lualatex' | 'platex' {
   const magic = text.match(/^\s*%\s*!TeX\s+program\s*=\s*(.+?)\s*$/im);
   if (magic) {
     const p = magic[1].toLowerCase();
@@ -626,11 +626,23 @@ async function setPdfPreviewMode(): Promise<void> {
 }
 
 async function openPdfInternal(pdfUri: vscode.Uri): Promise<void> {
+  const texEditor = vscode.window.activeTextEditor;
+
+  await closeExistingPdfTabs(pdfUri);
+
   await vscode.commands.executeCommand('vscode.openWith', pdfUri, '', {
     viewColumn: vscode.ViewColumn.Beside,
     preview: false,
     preserveFocus: true
   } as any);
+
+  if (texEditor) {
+    await vscode.window.showTextDocument(
+      texEditor.document,
+      texEditor.viewColumn ?? vscode.ViewColumn.One,
+      false
+    );
+  }
 
   await restoreTocAfterPdfOpen();
 }

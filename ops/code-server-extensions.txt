@@ -1,2 +1,2 @@
-mathematic.vscode-pdf
-tomoyuki.texcloud-plus
+mathematic.vscode-pdf@0.1.11
+tomoyuki.texcloud-plus@0.0.37
