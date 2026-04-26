@@ -36,7 +36,7 @@
       },
       {
         "command": "texcloud.openPdf",
-        "title": "Open PDF"
+        "title": "OpenPDF"
       },
       {
         "command": "texcloud.refreshOutline",
@@ -80,7 +80,7 @@
       },
       {
         "command": "texcloud.downloadPdf",
-        "title": "Download PDF"
+        "title": "SavePDF"
       }
     ],
     "menus": {
@@ -98,12 +98,12 @@
         {
           "command": "texcloud.setPdfPreviewMode",
           "when": "resourceExtname == .tex",
-          "group": "navigation@2.5"
+          "group": "navigation@3"
         },
         {
           "command": "texcloud.downloadPdf",
           "when": "resourceExtname == .tex",
-          "group": "navigation@2.2"
+          "group": "navigation@4"
         }
       ],
       "view/title": [
