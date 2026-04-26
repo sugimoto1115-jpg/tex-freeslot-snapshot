@@ -249,21 +249,39 @@ export function setupTeXOutline(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(
-      'texcloud.openOutlineItem',
-      async (item: HeadingItem) => {
-        const doc = await vscode.workspace.openTextDocument(item.uri);
-        const editor = await vscode.window.showTextDocument(doc, { preview: false });
-        const pos = new vscode.Position(item.line, 0);
-        editor.selection = new vscode.Selection(pos, pos);
-        editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.AtTop);
+      vscode.commands.registerCommand(
+        'texcloud.openOutlineItem',
+        async (item: HeadingItem) => {
+          const existingEditor = vscode.window.visibleTextEditors.find(
+            (ed) => ed.document.uri.toString() === item.uri.toString()
+          );
 
-        if (item.children.length > 0) {
-          provider.toggle(item);
+          const doc =
+            existingEditor?.document ??
+            (await vscode.workspace.openTextDocument(item.uri));
+
+          const targetColumn =
+            existingEditor?.viewColumn ??
+            vscode.window.visibleTextEditors.find((ed) => isTeXDocument(ed.document))
+              ?.viewColumn ??
+            vscode.ViewColumn.One;
+
+          const editor = await vscode.window.showTextDocument(doc, {
+            viewColumn: targetColumn,
+            preview: false,
+            preserveFocus: false
+          });
+
+          const pos = new vscode.Position(item.line, 0);
+          editor.selection = new vscode.Selection(pos, pos);
+          editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.AtTop);
+
+          if (item.children.length > 0) {
+            provider.toggle(item);
+          }
         }
-      }
-    )
-  );
+      )
+    );
 
   context.subscriptions.push(
       vscode.window.onDidChangeActiveTextEditor((editor) => {
