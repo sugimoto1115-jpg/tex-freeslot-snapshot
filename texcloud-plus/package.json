@@ -2,7 +2,7 @@
   "name": "texcloud-plus",
   "displayName": "TeX Cloud Plus",
   "description": "Overleaf-like helpers for TeX in code-server",
-  "version": "0.0.6",
+  "version": "0.0.37",
   "publisher": "tomoyuki",
   "engines": {
     "vscode": "^1.80.0"
@@ -11,36 +11,82 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:texcloud.buildCurrent",
-    "onCommand:texcloud.watchCurrent",
-    "onCommand:texcloud.stopWatch",
+    "onCommand:texcloud.smartBuild",
     "onCommand:texcloud.openPdf",
-    "onView:texcloud.sections"
+    "onView:texcloudOutline",
+    "onCommand:texcloud.refreshOutline",
+    "onCommand:texcloud.openOutlineItem",
+    "*",
+    "onStartupFinished",
+    "onCommand:texcloud.insertTextStyle",
+    "onCommand:texcloud.insertMathFont",
+    "onCommand:texcloud.insertFontSize",
+    "onCommand:texcloud.insertDocumentClass",
+    "onCommand:texcloud.insertTemplate",
+    "onCommand:texcloud.insertEnvironment",
+    "onCommand:texcloud.insertTableFigure",
+    "onCommand:texcloud.setPdfPreviewMode"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "texcloud.buildCurrent",
-        "title": "TeX: Build Current"
-      },
-      {
-        "command": "texcloud.watchCurrent",
-        "title": "TeX: Watch Current"
-      },
-      {
-        "command": "texcloud.stopWatch",
-        "title": "TeX: Stop Watch"
+        "command": "texcloud.smartBuild",
+        "title": "Smart Build"
       },
       {
         "command": "texcloud.openPdf",
-        "title": "TeX: Open PDF"
+        "title": "Open PDF"
+      },
+      {
+        "command": "texcloud.refreshOutline",
+        "title": "TeX Outline: Refresh"
+      },
+      {
+        "command": "texcloud.openOutlineItem",
+        "title": "TeX Outline: Open"
+      },
+      {
+        "command": "texcloud.insertTextStyle",
+        "title": "TeX: Insert Text Style"
+      },
+      {
+        "command": "texcloud.insertMathFont",
+        "title": "TeX: Insert Math Font"
+      },
+      {
+        "command": "texcloud.insertFontSize",
+        "title": "TeX: Insert Font Size"
+      },
+      {
+        "command": "texcloud.insertDocumentClass",
+        "title": "TeX: Insert Document Class"
+      },
+      {
+        "command": "texcloud.insertTemplate",
+        "title": "TeX: Insert Template"
+      },
+      {
+        "command": "texcloud.insertEnvironment",
+        "title": "TeX: Insert Environment"
+      },
+      {
+        "command": "texcloud.insertTableFigure",
+        "title": "TeX: Insert Table-Figure"
+      },
+      {
+        "command": "texcloud.setPdfPreviewMode",
+        "title": "▼"
+      },
+      {
+        "command": "texcloud.downloadPdf",
+        "title": "Download PDF"
       }
     ],
     "menus": {
       "editor/title": [
         {
-          "command": "texcloud.buildCurrent",
+          "command": "texcloud.smartBuild",
           "when": "resourceExtname == .tex",
           "group": "navigation@1"
         },
@@ -48,6 +94,60 @@
           "command": "texcloud.openPdf",
           "when": "resourceExtname == .tex",
           "group": "navigation@2"
+        },
+        {
+          "command": "texcloud.setPdfPreviewMode",
+          "when": "resourceExtname == .tex",
+          "group": "navigation@2.5"
+        },
+        {
+          "command": "texcloud.downloadPdf",
+          "when": "resourceExtname == .tex",
+          "group": "navigation@2.2"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "texcloud.refreshOutline",
+          "when": "view == texcloudOutline",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "texcloud.insertTextStyle",
+          "when": "resourceExtname == .tex",
+          "group": "navigation@1"
+        },
+        {
+          "command": "texcloud.insertMathFont",
+          "when": "resourceExtname == .tex",
+          "group": "navigation@2"
+        },
+        {
+          "command": "texcloud.insertFontSize",
+          "when": "resourceExtname == .tex",
+          "group": "navigation@3"
+        },
+        {
+          "command": "texcloud.insertDocumentClass",
+          "when": "resourceExtname == .tex",
+          "group": "navigation@4"
+        },
+        {
+          "command": "texcloud.insertTemplate",
+          "when": "resourceExtname == .tex",
+          "group": "navigation@5"
+        },
+        {
+          "command": "texcloud.insertEnvironment",
+          "when": "resourceExtname == .tex",
+          "group": "navigation@6"
+        },
+        {
+          "command": "texcloud.insertTableFigure",
+          "when": "resourceExtname == .tex",
+          "group": "navigation@7"
         }
       ]
     },
@@ -55,8 +155,8 @@
       "activitybar": [
         {
           "id": "texcloud",
-          "title": "TeX",
-          "icon": "media/tex.svg"
+          "title": "TOC",
+          "icon": "media/toc.svg"
         }
       ]
     },
@@ -64,9 +164,34 @@
       "texcloud": [
         {
           "id": "texcloud.sections",
-          "name": "Sections / Tags"
+          "name": "Commands"
+        },
+        {
+          "id": "texcloudOutline",
+          "name": "Table of Contents"
         }
       ]
+    },
+    "configuration": {
+      "title": "TeX Cloud Plus",
+      "properties": {
+        "texcloud.pdfPreviewMode": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "internal",
+            "external"
+          ],
+          "default": "auto",
+          "description": "How Open PDF should preview PDFs."
+        }
+      }
     }
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/vscode": "^1.80.0",
+    "@vscode/vsce": "^3.9.1",
+    "typescript": "^6.0.3"
   }
 }
