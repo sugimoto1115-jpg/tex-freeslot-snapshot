@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { setupTeXOutline } from './outline';
 
 let buildScriptPath = '';
-const EXTERNAL_PDF_BASE = 'http://100.70.130.77:9001';
+const EXTERNAL_PDF_BASE = 'https://tex.freeslot-schedule.com/pdf';
 
 function shellQuote(value: string): string {
   return `'${value.replace(/'/g, `'\\''`)}'`;
