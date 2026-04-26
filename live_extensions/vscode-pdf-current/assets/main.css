@@ -17,3 +17,11 @@
 body {
   padding: 0;
 }
+
+/* Hide broken internal-download UI */
+#downloadButton,
+#secondaryDownload,
+button[data-l10n-id="pdfjs-download-button"],
+button[data-l10n-id="pdfjs-secondary-download-button"] {
+  display: none !important;
+}

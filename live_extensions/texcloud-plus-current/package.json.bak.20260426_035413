@@ -77,10 +77,6 @@
       {
         "command": "texcloud.setPdfPreviewMode",
         "title": "▼"
-      },
-      {
-        "command": "texcloud.downloadPdf",
-        "title": "Download PDF"
       }
     ],
     "menus": {
@@ -99,11 +95,6 @@
           "command": "texcloud.setPdfPreviewMode",
           "when": "resourceExtname == .tex",
           "group": "navigation@2.5"
-        },
-        {
-          "command": "texcloud.downloadPdf",
-          "when": "resourceExtname == .tex",
-          "group": "navigation@2.2"
         }
       ],
       "view/title": [

@@ -77,6 +77,10 @@
 			{
 				"command": "texcloud.setPdfPreviewMode",
 				"title": "▼"
+			},
+			{
+				"command": "texcloud.downloadPdf",
+				"title": "Download PDF"
 			}
 		],
 		"menus": {
@@ -95,6 +99,11 @@
 					"command": "texcloud.setPdfPreviewMode",
 					"when": "resourceExtname == .tex",
 					"group": "navigation@2.5"
+				},
+				{
+					"command": "texcloud.downloadPdf",
+					"when": "resourceExtname == .tex",
+					"group": "navigation@2.2"
 				}
 			],
 			"view/title": [
@@ -186,8 +195,8 @@
 		"typescript": "^6.0.3"
 	},
 	"__metadata": {
-		"installedTimestamp": 1777171861622,
+		"installedTimestamp": 1777175999749,
 		"targetPlatform": "undefined",
-		"size": 67128
+		"size": 79518
 	}
 }

@@ -196,7 +196,12 @@ export function activate(context: vscode.ExtensionContext): void {
   registerTemplateHelper(context);
   registerSizeDocclassHelpers(context);
   registerInsertHelpers(context);
-  setupTeXOutline(context);
+  
+  context.subscriptions.push(
+    vscode.commands.registerCommand('texcloud.downloadPdf', downloadPdf)
+  );
+
+setupTeXOutline(context);
   buildScriptPath = path.join(context.extensionPath, 'scripts', 'texcloud-build.sh');
 
   context.subscriptions.push(
@@ -590,6 +595,40 @@ function registerTableFigureHelper(context: vscode.ExtensionContext): void {
 // ==== texcloud table-figure end ====
 
 // ==== texcloud pdf mode begin ====
+async function downloadPdf(): Promise<void> {
+  const doc = getActiveTexDocument();
+  if (!doc) {
+    return;
+  }
+
+  const rootUri = await getRootTexUri(doc);
+  const rootDir = path.dirname(rootUri.fsPath);
+  const rootBase = path.basename(rootUri.fsPath, path.extname(rootUri.fsPath));
+  const pdfUri = vscode.Uri.file(path.join(rootDir, `${rootBase}.pdf`));
+
+  try {
+    await vscode.workspace.fs.stat(pdfUri);
+  } catch {
+    void vscode.window.showErrorMessage('PDF not found. Build first.');
+    return;
+  }
+
+  try {
+    await vscode.commands.executeCommand('revealInExplorer', pdfUri);
+  } catch {}
+
+  for (const command of ['explorer.download', 'filesExplorer.download']) {
+    try {
+      await vscode.commands.executeCommand(command);
+      return;
+    } catch {}
+  }
+
+  void vscode.window.showInformationMessage(
+    'PDF was revealed in Explorer. Use the Explorer download action if automatic download is unavailable.'
+  );
+}
+
 type PdfPreviewMode = 'auto' | 'internal' | 'external';
 
 function getPdfPreviewMode(): PdfPreviewMode {
